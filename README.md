@@ -1,6 +1,6 @@
 # Equity-Implied Signals in Corporate Bond Allocation
 
-> **Private review draft.** This repository is being prepared for publication. Licensed input data are intentionally excluded.
+> **Reproduction note.** Licensed input data are intentionally excluded. The analysis code, input specification and selected derived results are provided.
 
 Can information embedded in equity markets improve tactical allocation between high-yield and investment-grade corporate bonds?
 
@@ -23,7 +23,7 @@ The empirical question is not whether these signals explain historical outcomes.
 - Corporate-bond outcomes: high-yield versus investment-grade spread and return measures
 - Equity information: VIX, CBOE SKEW and the variance risk premium
 - Credit information: option-adjusted spreads, spread changes and alternative credit measures
-- Benchmarks: prevailing mean, autoregressive forecasts and static portfolio allocations
+- Benchmarks: recursively estimated prevailing mean (B0), AR(1) (B1), AR(2) (B2) and static portfolio allocations
 - Portfolio evaluation: return, volatility, Sharpe and Sortino ratios, drawdown, turnover, certainty equivalents and information ratios
 - Validation: alternative specifications, subsamples, bootstrap inference and Hansen's Superior Predictive Ability framework
 
@@ -76,7 +76,7 @@ This project therefore treats failure to beat a simple benchmark as a substantiv
    python thesis_mujtaba_final.py
    ```
 
-The pipeline writes 37 CSV tables and 11 PDF figures to `Results/`.
+The pipeline writes 37 CSV tables and 11 figures in both PDF and PNG formats to `results/`.
 
 ## Data availability
 
@@ -95,4 +95,3 @@ Mujtaba Ali Bhutto
 ## Disclaimer
 
 This repository documents academic financial research. It is not investment advice, a trading recommendation or a production investment model. Historical and simulated results do not guarantee future performance.
-

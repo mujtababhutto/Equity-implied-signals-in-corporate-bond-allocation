@@ -7,8 +7,8 @@ Inputs:
     french_daily.csv
 
 Outputs:
-    Results/*.csv
-    Results/figures/*.pdf
+    results/*.csv
+    results/figures/*.{pdf,png}
 
 Entry point:
     thesis_mujtaba_final.py
@@ -27,7 +27,7 @@ PROJECT_DIR = Path(__file__).resolve().parent
 PATH_MONTHLY = PROJECT_DIR / "monthly_signals.csv"
 PATH_DAILY = PROJECT_DIR / "daily_signals.csv"
 PATH_FRENCH = PROJECT_DIR / "french_daily.csv"
-OUTPUT_DIR = PROJECT_DIR / "Results"
+OUTPUT_DIR = PROJECT_DIR / "results"
 FIGURE_SUBFOLDER = "figures"
 PRINT_TABLES = False
 
@@ -136,7 +136,7 @@ import numpy as np
 import pandas as pd
 import statsmodels.api as sm
 import matplotlib as mpl
-# Non-interactive Matplotlib backend for PDF figure output.
+# Non-interactive Matplotlib backend for PDF and PNG figure output.
 mpl.use("Agg")
 import matplotlib.pyplot as plt
 from statsmodels.tsa.arima.model import ARIMA
@@ -1246,6 +1246,13 @@ mpl.rcParams.update({
 K = ["#1a1a1a", "#6e6e6e", "#a8a8a8", "#404040", "#c8c8c8"]
 
 
+def _save_figure(fig, stem: str) -> None:
+    """Write a publication-quality PDF and a README-friendly PNG."""
+    fig.savefig(FIG / f"{stem}.pdf")
+    fig.savefig(FIG / f"{stem}.png")
+    plt.close(fig)
+
+
 def _shade_recessions(ax, p):
     if "usrec" not in p.columns:
         return
@@ -1269,7 +1276,7 @@ def fig_3_1(p):
     ax.set_ylabel("Option-adjusted spread (%)")
     ax.set_title("Figure 3.1  Corporate bond index spreads, 1994-2026")
     ax.legend(loc="upper left")
-    fig.savefig(FIG / "fig_3_1_spreads.pdf"); plt.close(fig)
+    _save_figure(fig, "fig_3_1_spreads")
 
 
 def fig_3_2(p):
@@ -1292,7 +1299,7 @@ def fig_3_2(p):
                 xy=(pd.Timestamp("2003-09-30"), p["skew"].max() * 0.98),
                 xytext=(6, -2), textcoords="offset points", fontsize=7.5, color=K[3])
     a2.set_ylabel("SKEW index"); a2.legend(loc="upper left")
-    fig.savefig(FIG / "fig_3_2_signals.pdf"); plt.close(fig)
+    _save_figure(fig, "fig_3_2_signals")
 
 
 def fig_4_1(p):
@@ -1314,7 +1321,7 @@ def fig_4_1(p):
     ax.set_xticks(x); ax.set_xlabel("Lag (months)"); ax.set_ylabel("Autocorrelation")
     ax.set_title("Figure 4.1  Return autocorrelation: bond indices against a traded market")
     ax.legend(ncol=2, loc="upper right")
-    fig.savefig(FIG / "fig_4_1_autocorrelation.pdf"); plt.close(fig)
+    _save_figure(fig, "fig_4_1_autocorrelation")
 
 
 def fig_4_2(p):
@@ -1335,7 +1342,7 @@ def fig_4_2(p):
     ax.set_ylabel(f"Rolling {win}-month correlation")
     ax.set_title("Figure 4.2  What the 2022 episode did and did not change")
     ax.legend(ncol=2, loc="lower left")
-    fig.savefig(FIG / "fig_4_2_correlations.pdf"); plt.close(fig)
+    _save_figure(fig, "fig_4_2_correlations")
 
 
 def fig_4_3(forecasts, actual, benchmark, label_bench="AR(2)"):
@@ -1348,7 +1355,7 @@ def fig_4_3(forecasts, actual, benchmark, label_bench="AR(2)"):
     ax.set_ylabel(f"Cumulative SSE difference vs {label_bench}\n(rising = model better)")
     ax.set_title("Figure 4.3  Out-of-sample forecast performance over time")
     ax.legend(loc="lower left")
-    fig.savefig(FIG / "fig_4_3_cssed.pdf"); plt.close(fig)
+    _save_figure(fig, "fig_4_3_cssed")
 
 
 def fig_4_4(p, tilt, label="Credit and macro"):
@@ -1370,7 +1377,7 @@ def fig_4_4(p, tilt, label="Credit and macro"):
     h1, l1 = ax.get_legend_handles_labels(); h2, l2 = ax2.get_legend_handles_labels()
     ax.legend(h1 + h2, l1 + l2, loc="lower left")
     ax.set_title("Figure 4.4  Tactical tilt against the credit cycle")
-    fig.savefig(FIG / "fig_4_4_tilt_path.pdf"); plt.close(fig)
+    _save_figure(fig, "fig_4_4_tilt_path")
 
 
 def fig_4_5(boot):
@@ -1385,7 +1392,7 @@ def fig_4_5(boot):
                   "(95% bootstrap interval)")
     ax.set_title("Figure 4.5  No information set is distinguishable from the benchmark")
     ax.grid(axis="y", alpha=0)
-    fig.savefig(FIG / "fig_4_5_information_ratios.pdf"); plt.close(fig)
+    _save_figure(fig, "fig_4_5_information_ratios")
 
 
 def fig_4_6(rb):
@@ -1399,7 +1406,7 @@ def fig_4_6(rb):
     ax.set_ylabel("Information ratio")
     ax.set_title("Figure 4.6  The comparison is invariant to mandate style")
     ax.legend(loc="upper left")
-    fig.savefig(FIG / "fig_4_6_mandate_styles.pdf"); plt.close(fig)
+    _save_figure(fig, "fig_4_6_mandate_styles")
 
 
 def fig_4_7(dec):
@@ -1414,7 +1421,7 @@ def fig_4_7(dec):
     ax.set_xlabel("Contribution to annualised active return (basis points)")
     ax.set_title("Figure 4.7  Only the covariance term is tactical skill")
     ax.legend(loc="lower right"); ax.grid(axis="y", alpha=0)
-    fig.savefig(FIG / "fig_4_7_attribution.pdf"); plt.close(fig)
+    _save_figure(fig, "fig_4_7_attribution")
 
 
 def fig_4_8(sub):
@@ -1428,7 +1435,7 @@ def fig_4_8(sub):
     ax.set_ylabel("Information ratio")
     ax.set_title("Figure 4.8  Subperiod information ratios")
     ax.legend(ncol=2, loc="lower left", fontsize=7.5)
-    fig.savefig(FIG / "fig_4_8_subperiods.pdf"); plt.close(fig)
+    _save_figure(fig, "fig_4_8_subperiods")
 
 
 def fig_4_9(oos):
@@ -1446,7 +1453,7 @@ def fig_4_9(oos):
     ax.set_xlabel("Out-of-sample $R^2$")
     ax.set_title("Figure 4.9  Out-of-sample performance against both benchmarks")
     ax.legend(loc="lower left"); ax.grid(axis="y", alpha=0)
-    fig.savefig(FIG / "fig_4_9_both_benchmarks.pdf"); plt.close(fig)
+    _save_figure(fig, "fig_4_9_both_benchmarks")
 
 
 def make_figures(p, oos, oos_bits, taa_bits):
@@ -1640,10 +1647,11 @@ def run_all():
 
     print("[8/8] Summarizing outputs")
     tables = len(list(OUT.glob("*.csv")))
-    figures = len(list(FIG.glob("*.pdf")))
+    pdf_figures = len(list(FIG.glob("*.pdf")))
+    png_figures = len(list(FIG.glob("*.png")))
     print("\nCompleted successfully.")
     print(f"Tables: {tables}")
-    print(f"Figures: {figures}")
+    print(f"Figures: {pdf_figures} PDF, {png_figures} PNG")
     print(f"Output: {OUT.resolve()}")
 
 
